@@ -17,7 +17,7 @@ include(${CMAKE_TOOLCHAIN_FILE})
 
 FIND_PACKAGE(Git REQUIRED)
 set(CUBE_SOURCE "${CMAKE_BINARY_DIR}/STM32F4-Cube-Firmware")
-if(EXISTS ${CUBE_SOURSE})
+if(EXISTS ${CUBE_SOURCE})
     message("Cube FW directory exists")
 else()
     message("Getting Cube Firmware")
@@ -28,7 +28,7 @@ endif()
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
 set(uGFX_SOURCE "${CMAKE_BINARY_DIR}/uGFX")
-if(EXISTS ${uGFX_SOURSE})
+if(EXISTS ${uGFX_SOURCE})
     message("uGFX directroy exists")
 else()
     message("Getting uGFX Source")
@@ -37,6 +37,17 @@ else()
 endif()
 
 set(uGFX_DIR ${uGFX_SOURCE})
+
+set(STM32_STD_SOURCE "${CMAKE_BINARY_DIR}/STM32F4xx-standard-peripherals-library")
+if(EXISTS ${STM32_STD_SOURCE})
+    message("STM32 STD directroy exists")
+else()
+    message("Getting STM32 STD Source")
+    set(GIT_REPOSITORY "https://github.com/alxhoff/STM32F4xx-standard-peripherals-library")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
+endif()
+
+set(STM32STD_DIR ${STM32_STD_SOURCE})
 
 SET(FREERTOS_HEAP_IMPL 4)
 
