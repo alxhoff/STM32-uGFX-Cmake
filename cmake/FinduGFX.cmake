@@ -1,19 +1,55 @@
+SET(uGFX_COMPONENTS gadc gaudio gdriver gdisp gevent gfile ginput gmisc gos
+    gqueue gtimer gtrans gwin)
+
+SET(uGFX_REQUIRED_COMPONENTS gdisp gdriver)
+
+SET(uGFX_PREFIX gfx)
+
+SET(uGFX_HEADERS
+    ${uGFX_PREFIX}.h
+    ${uGFX_PREFIX}_options.h
+    ${uGFX_PREFIX}_types.h
+    ${uGFX_PREFIX}_compilers.h
+    )
+
+SET(uGFX_SRCS
+    ${uGFX_PREFIX}.c
+    ${uGFX_PREFIX}_mk.c
+    )
+
+# Set defaults if no components given
 IF(NOT uGFX_FIND_COMPONENTS)
-    SET(uGFX_FIND_COMPONENTS gos gos_chibios)
-    MESSAGE(STATUS "No uGFX components specified, using default: ${uGFX_FIND_COMPONENTS}")
+    SET(uGFX_FIND_COMPONENTS uGFX_COMPONENTS)
+    MESSAGE(STATUS "No uGFX components specified, using all: ${uGFX_COMPONENTS}")
 ENDIF()
 
-LIST(APPEND uGFX_FIND_COMPONENTS gfx gdriver)
+LIST(APPEND uGFX_FIND_COMPONENTS ${uGFX_REQUIRED_COMPONENTS})
 
-SET(uGFX_gfx_SEARCH_PATH ${uGFX_DIR} ${uGFX_DIR}/src)
-SET(uGFX_gfx_HEADERS gfx.h)
-SET(uGFX_gfx_SOURCES gfx.c)
+# Required components
+FOREACH(cmp ${uGFX_REQUIRED_COMPONENTS})
+    LIST(FIND uGFX_FIND_COMPONENTS ${cmp} uGFX_FOUND_INDEX)
+    IF(${uGFX_FOUND_INDEX} LESS 0)
+        LIST(APPEND uGFX_FIND_COMPONENTS ${cmp})
+    ENDIF()
+ENDFOREACH()
 
-SET(uGFX_gdriver_SEARCH_PATH ${uGFX_DIR}/src/gdriver)
-SET(uGFX_gdriver_HEADERS gdriver_options.h gdriver_rules.h gdriver.h)
-SET(uGFX_gdriver_SOURCES gdriver.c)
+FOREACH(cmp ${uGFX_FIND_COMPONENTS})
+    LIST(FIND uGFX_COMPONENTS ${cmp} uGFX_FOUND_INDEX)
+    IF(${uGFX_FOUND_INDEX} LESS 0)
+        MESSAGE(FATAL_ERROR "Unknown uGFX Module: ${cmp}. Available modules: ${uGFX_COMPONENTS}")
+    ELSE()
+    ENDIF()
+ENDFOREACH()
 
-INCLUDE(uGFX_GOS)
+# SET(uGFX_gfx_SEARCH_PATH ${uGFX_DIR} ${uGFX_DIR}/src)
+# SET(uGFX_gfx_HEADERS gfx.h)
+# SET(uGFX_gfx_SOURCES gfx.c)
+#
+# SET(uGFX_gdriver_SEARCH_PATH ${uGFX_DIR}/src/gdriver)
+# SET(uGFX_gdriver_HEADERS gdriver_options.h gdriver_rules.h gdriver.h)
+# SET(uGFX_gdriver_SOURCES gdriver.c)
+#
+# INCLUDE(uGFX_GOS)
 INCLUDE(uGFX_GDISP)
 
 SET(uGFX_COMPONENTS gfx gdriver gos ${uGFX_GOS_MODULES} gdisp ${uGFX_GDISP_MODULES})
@@ -36,3 +72,6 @@ FOREACH(comp ${uGFX_FIND_COMPONENTS})
         ENDFOREACH()
     ENDIF()
 ENDFOREACH()
+
+LIST(REMOVE_DUPLICATES uGFX_INCLUDE_DIRS)
+LIST(REMOVE_DUPLICATES uGFX_SOURCES)
