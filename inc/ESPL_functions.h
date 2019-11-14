@@ -7,6 +7,10 @@
 #ifndef ESPL_functions_INCLUDED
 #define ESPL_functions_INCLUDED
 
+#include "FreeRTOS.h"
+#include "semphr.h"
+#include "stm32f4xx.h"
+
 // Buttons
 #define ESPL_Register_Button_A GPIOE
 #define ESPL_Register_Button_B GPIOE
@@ -15,14 +19,15 @@
 #define ESPL_Register_Button_E GPIOA
 #define ESPL_Register_Button_K GPIOE
 
-#define ESPL_Pin_Button_A	GPIO_Pin_6
-#define ESPL_Pin_Button_B	GPIO_Pin_4
-#define ESPL_Pin_Button_C	GPIO_Pin_5
-#define ESPL_Pin_Button_D	GPIO_Pin_2
-#define ESPL_Pin_Button_E	GPIO_Pin_0
-#define ESPL_Pin_Button_K	GPIO_Pin_3
+#define ESPL_Pin_Button_A GPIO_Pin_6
+#define ESPL_Pin_Button_B GPIO_Pin_4
+#define ESPL_Pin_Button_C GPIO_Pin_5
+#define ESPL_Pin_Button_D GPIO_Pin_2
+#define ESPL_Pin_Button_E GPIO_Pin_0
+#define ESPL_Pin_Button_K GPIO_Pin_3
 
-#define ESPL_Pins_GPIOE GPIO_Pin_6|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_2|GPIO_Pin_3
+#define ESPL_Pins_GPIOE                                                        \
+	GPIO_Pin_6 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_2 | GPIO_Pin_3
 #define ESPL_Pins_GPIOA GPIO_Pin_0
 
 // Joysticks

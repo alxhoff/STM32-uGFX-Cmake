@@ -12,7 +12,7 @@ SET(uGFX_GDISP_DRIVERS ED060SC4  AlteraFramereader framebuffer ED060SC4 Fb24bpp
 
 LIST(APPEND uGFX_COMPONENTS ${uGFX_GDISP_DRIVERS})
 
-SET(uGFX_REQUIRED_COMPONENTS gfx gdisp gdriver)
+SET(uGFX_REQUIRED_COMPONENTS gfx gos gdisp gdriver)
 LIST(APPEND uGFX_COMPONENTS ${uGFX_REQUIRED_COMPONENTS})
 
 SET(uGFX_PREFIX gfx)
@@ -100,11 +100,13 @@ SET(uGFX_gmisc_SOURCES gmisc_arrayops.c gmisc.c gmisc_hittest.c gmisc_matrix2d.c
     gmisc_trig.c)
 
 SET(uGFX_gos_SEARCH_PATH ${uGFX_DIR}/src/gos)
-SET(uGFX_HEADERS gos_arduino.h god_chibios.h gos_cmsis2.h gos_cmsis.h gos_ecos.h
+SET(uGFX_gos_HEADERS
+    gos_arduino.h gos_chibios.h gos_cmsis2.h gos_cmsis.h gos_ecos.h
     gos_freertos.h gos.h gos_keil.h gos_linux.h gos_nios.h gos_options.h
     gos_osx.h gos_qt.h gos_raw32.h gos_rawrtos.h gos_rtx5.h gos_rules.h
     gos_win32.h gos_x_heap.h gos_x_threads_cortexm01.h gos_x_threads_cortexm347.h
-    gos_x_threads_cortexm47fp.h gos_x_threads gos_zephyr.h)
+    gos_x_threads_cortexm47fp.h gos_x_threads.h gos_zephyr.h
+    )
 SET(uGFX_gos_SOURCES gos_arduino.c gos_chibios.c gos_cmsis2.c gos_cmsis.c
     gos_ecos.c gos_freertos.c gos_linux.c gos_nios.c gos_osx.c gos_raw32.c
     gos_rawrtos.c gos_win32.c gos_x_heap.c gos_x_threads.c gos_zephyr.c)
@@ -164,11 +166,6 @@ ENDFOREACH()
 
 LIST(REMOVE_DUPLICATES uGFX_INCLUDE_DIRS)
 LIST(REMOVE_DUPLICATES uGFX_SOURCES)
-
-# MESSAGE("SOURCES: ${uGFX_SOURCES}")
-FOREACH(line ${uGFX_INCLUDE_DIRS})
-    MESSAGE("${line}")
-ENDFOREACH()
 
 INCLUDE(FindPackageHandleStandardArgs)
 
