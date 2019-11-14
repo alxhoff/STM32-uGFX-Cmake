@@ -1,0 +1,40 @@
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+language: c
+
+os: linux
+
+compiler: gcc
+
+# Blacklist
+branches:
+    only:
+        - master
+
+before_install:
+    - sudo add-apt-repository -y ppa:team-gcc-arm-embedded/ppa
+    - sudo apt-get -q update
+    - sudo apt-get install -y gcc-arm-embedded
+
+# Install dependencies
+addons:
+    apt:
+        packages:
+            - libc6:i386
+            - libncurses5:i386
+            - libstdc++6:i386
+            - git
+            - cmake
+
+# Build your code e.g. by calling make
+script:
+    - cd cmake_proj
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+
+
+
+

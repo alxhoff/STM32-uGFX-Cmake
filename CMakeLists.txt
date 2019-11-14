@@ -32,7 +32,7 @@ if(EXISTS ${uGFX_SOURCE})
     message("uGFX directroy exists")
 else()
     message("Getting uGFX Source")
-    set(GIT_REPOSITORY "https://git.ugfx.io/uGFX/uGFX.git")
+    set(GIT_REPOSITORY "https://github.com/alxhoff/uGFX-Fork.git")
     execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
 endif()
 
