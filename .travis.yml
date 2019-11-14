@@ -29,7 +29,6 @@ addons:
 
 # Build your code e.g. by calling make
 script:
-    - cd cmake_proj
     - mkdir build
     - cd build
     - cmake ..
