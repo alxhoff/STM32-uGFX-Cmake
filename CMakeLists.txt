@@ -49,10 +49,22 @@ endif()
 
 set(STM32STD_DIR ${STM32_STD_SOURCE})
 
+set(STM32_DISC_SOURCE "${CMAKE_BINARY_DIR}/STM32F429I-Discovery-Firmware")
+if(EXISTS ${STM32_DISC_SOURCE})
+    message("STM32F429I Discovery directroy exists")
+else()
+    message("Getting STM32F429I Discovery Source")
+    set(GIT_REPOSITORY "https://github.com/alxhoff/STM32F429I-Discovery-Firmware")
+    execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} )
+endif()
+
+set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
+
 SET(FREERTOS_HEAP_IMPL 4)
 
 FIND_PACKAGE(FreeRTOS)
-FIND_PACKAGE(STM32STDPERIPH COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
+FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
+FIND_PACKAGE(STM32Discovery REQUIRED)
 FIND_PACKAGE(CMSIS REQUIRED)
 # FIND_PACKAGE(STM32HAL COMPONENTS adc cortex dma eth flash flash_ramfunc gpio i2c pcd rcc tim uart REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS usb REQUIRED)
@@ -64,6 +76,8 @@ INCLUDE_DIRECTORIES(
     ${CMSIS_INCLUDE_DIRS}
     # ${STM32HAL_INCLUDE_DIR}
     ${STM32LL_INCLUDE_DIR}
+    ${STM32STD_INCLUDE_DIR}
+    ${STM32Discovery_INCLUDE_DIR}
     ${FreeRTOS_INCLUDE_DIRS}
     ${uGFX_INCLUDE_DIRS}
     )
@@ -76,7 +90,8 @@ ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}
     ${PROJECT_SOURCES}
     # ${STM32HAL_SOURCES}
-    ${STM32STDPERIPH}
+    ${STM32STD_SOURCES}
+    ${STM32Discovery_SOURCES}
     ${STM32LL_SOURCES}
     ${FreeRTOS_SOURCES}
     ${CMSIS_SOURCES}
