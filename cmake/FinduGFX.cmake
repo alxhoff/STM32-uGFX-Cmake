@@ -1,7 +1,19 @@
-SET(uGFX_COMPONENTS gadc gaudio gdriver gdisp gevent gfile ginput gmisc gos
-    gqueue gtimer gtrans gwin)
+SET(uGFX_COMPONENTS gfx gadc gaudio gdisp_mcufont gdisp_fonts
+    gdisp_image gdriver gdisp gevent gfile ginput gmisc gos
+    gdisp_pixmap gqueue gtimer gtrans gwin
+    )
 
-SET(uGFX_REQUIRED_COMPONENTS gdisp gdriver)
+SET(uGFX_GDISP_DRIVERS ED060SC4  AlteraFramereader framebuffer ED060SC4 Fb24bpp
+    HX8347D ILI93xx ILI9320 ILI9325 ILI9341 ILI9481 LGDP4532 Nokia6610GE8
+    Nokia6610GE12 PCD8544 PCF8812 R61505U RA8875 S6D1121 SPFD54124B SSD1289
+    SSD1306 SSD1331 SSD1351 SSD1963 SSD2119 ST7565
+    # STM32F429iDiscovery
+    STM32LTDC TestStub TLS8204)
+
+LIST(APPEND uGFX_COMPONENTS ${uGFX_GDISP_DRIVERS})
+
+SET(uGFX_REQUIRED_COMPONENTS gfx gdisp gdriver)
+LIST(APPEND uGFX_COMPONENTS ${uGFX_REQUIRED_COMPONENTS})
 
 SET(uGFX_PREFIX gfx)
 
@@ -23,8 +35,6 @@ IF(NOT uGFX_FIND_COMPONENTS)
     MESSAGE(STATUS "No uGFX components specified, using all: ${uGFX_COMPONENTS}")
 ENDIF()
 
-LIST(APPEND uGFX_FIND_COMPONENTS ${uGFX_REQUIRED_COMPONENTS})
-
 # Required components
 FOREACH(cmp ${uGFX_REQUIRED_COMPONENTS})
     LIST(FIND uGFX_FIND_COMPONENTS ${cmp} uGFX_FOUND_INDEX)
@@ -41,8 +51,11 @@ FOREACH(cmp ${uGFX_FIND_COMPONENTS})
     ENDIF()
 ENDFOREACH()
 
+LIST(REMOVE_DUPLICATES uGFX_FIND_COMPONENTS)
+
 INCLUDE(uGFX_GDISP)
-LIST(APPEND uGFX_COMPONENTS ${uGFX_GDISP_MODULES})
+LIST(APPEND uGFX_FIND_COMPONENTS ${uGFX_GDISP_MODULES})
+MESSAGE("COMPONENTS: ${uGFX_FIND_COMPONENTS}")
 
 SET(uGFX_gfx_SEARCH_PATH ${uGFX_DIR} ${uGFX_DIR}/src)
 SET(uGFX_gfx_HEADERS gfx.h)
@@ -61,7 +74,7 @@ SET(uGFX_gdriver_SEARCH_PATH ${uGFX_DIR}/src/gdriver)
 SET(uGFX_gdriver_HEADERS gdriver_options.h gdriver_rules.h gdriver.h)
 SET(uGFX_gdriver_SOURCES gdriver.c)
 
-SET(uGFX_gevent_SEARCH_PATH ${uGFX_DIR}/src/gdriver)
+SET(uGFX_gevent_SEARCH_PATH ${uGFX_DIR}/src/gevent)
 SET(uGFX_gevent_HEADERS gevent.h gevent_options.h gevent_rules.h)
 SET(uGFX_gevent_SOURCES gevent.c)
 
@@ -75,7 +88,7 @@ SET(uGFX_gfile_SOURCES gfile.c gfile_fatfs_diskio_chibios.c gfile_fatfs_wrapper.
     gfile_scang.c gfile_stdio.c)
 
 SET(uGFX_ginput_SEARCH_PATH ${uGFX_DIR}/src/ginput)
-SET(uGFX_ginput_HEADERS ginput_dial.h ginput_driver.dial.h ginput_driver_keyboard.h
+SET(uGFX_ginput_HEADERS ginput_dial.h ginput_driver_dial.h ginput_driver_keyboard.h
     ginput_driver_mouse.h ginput_driver_toggle.h ginput.h ginput_keyboard.h
     ginput_keyboard_microcode.h ginput_mouse.h ginput_options.h ginput_rules.h
     ginput_toggle.h)
@@ -95,17 +108,17 @@ SET(uGFX_HEADERS gos_arduino.h god_chibios.h gos_cmsis2.h gos_cmsis.h gos_ecos.h
     gos_x_threads_cortexm47fp.h gos_x_threads gos_zephyr.h)
 SET(uGFX_gos_SOURCES gos_arduino.c gos_chibios.c gos_cmsis2.c gos_cmsis.c
     gos_ecos.c gos_freertos.c gos_linux.c gos_nios.c gos_osx.c gos_raw32.c
-    gos_rawrtos.c gos_win32.c gos_x_heap.c gos_x_threads.c gos_zephr.c)
+    gos_rawrtos.c gos_win32.c gos_x_heap.c gos_x_threads.c gos_zephyr.c)
 
-SET(uGFX_gqueue_SEARCH_PATH ${uGFX}/src/gqueue)
+SET(uGFX_gqueue_SEARCH_PATH ${uGFX_DIR}/src/gqueue)
 SET(uGFX_gqueue_HEADERS gqueue.h gqueue_options.h gqueue_rules.h)
 SET(uGFX_gqueue_SOURCES gqueue.c)
 
-SET(uGFX_gtimer_SEARCH_PATH ${uGFX}/src/gtimer)
+SET(uGFX_gtimer_SEARCH_PATH ${uGFX_DIR}/src/gtimer)
 SET(uGFX_gtimer_HEADERS gtimer.h gtimer_options.h gtimer_rules.h)
 SET(uGFX_gtimer_SOURCES gtimer.c)
 
-SET(uGFX_gtrans_SEARCH_PATH ${uGFX}/src/gtrans)
+SET(uGFX_gtrans_SEARCH_PATH ${uGFX_DIR}/src/gtrans)
 SET(uGFX_gtrans_HEADERS gtrans.h gtrans_options.h gtrans_rules.h)
 SET(uGFX_gtrans_SOURCES gtrans.c)
 
@@ -121,7 +134,6 @@ SET(uGFX_gwin_SOURCES gwin_button.c gwin_container.c gwin_image.c gwin_list.c
     gwin_checkbox.c gwin_gl3d.c gwin_keyboard_layout.c gwin_progressbar.c gwin_textedit.c
     gwin_console.c gwin_graph.c gwin_label.c gwin_radio.c gwin_widget.c)
 
-#here
 FOREACH(comp ${uGFX_FIND_COMPONENTS})
     LIST(FIND uGFX_COMPONENTS ${comp} INDEX)
     IF(INDEX EQUAL -1)
@@ -129,13 +141,24 @@ FOREACH(comp ${uGFX_FIND_COMPONENTS})
     ENDIF()
     IF(uGFX_${comp}_SOURCES)
         FOREACH(source ${uGFX_${comp}_SOURCES})
-            FIND_FILE(uGFX_${comp}_${source} NAMES ${source} PATHS ${uGFX_${comp}_SEARCH_PATH} NO_DEFAULT_PATH CMAKE_FIND_ROOT_PATH_BOTH)
+            MESSAGE("SOURCE: ${source}")
+            FIND_FILE(uGFX_${comp}_${source}
+                NAMES ${source}
+                PATHS ${uGFX_${comp}_SEARCH_PATH}
+                NO_DEFAULT_PATH
+                CMAKE_FIND_ROOT_PATH_BOTH
+                )
             LIST(APPEND uGFX_SOURCES ${uGFX_${comp}_${source}})
         ENDFOREACH()
     ENDIF()
     IF(uGFX_${comp}_HEADERS)
         FOREACH(header ${uGFX_${comp}_HEADERS})
-            FIND_PATH(uGFX_${comp}_${header}_INCLUDE_DIR NAMES ${header} PATHS ${uGFX_${comp}_SEARCH_PATH} NO_DEFAULT_PATH CMAKE_FIND_ROOT_PATH_BOTH)
+            FIND_PATH(uGFX_${comp}_${header}_INCLUDE_DIR
+                NAMES ${header}
+                PATHS ${uGFX_${comp}_SEARCH_PATH}
+                NO_DEFAULT_PATH
+                CMAKE_FIND_ROOT_PATH_BOTH
+                )
             LIST(APPEND uGFX_INCLUDE_DIRS ${uGFX_${comp}_${header}_INCLUDE_DIR})
         ENDFOREACH()
     ENDIF()
@@ -143,3 +166,10 @@ ENDFOREACH()
 
 LIST(REMOVE_DUPLICATES uGFX_INCLUDE_DIRS)
 LIST(REMOVE_DUPLICATES uGFX_SOURCES)
+
+MESSAGE("SOURCES: ${uGFX_SOURCES}")
+MESSAGE("HEADERS: ${uGFX_INCLUDE_DIRS}")
+
+INCLUDE(FindPackageHandleStandardArgs)
+
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(uGFX DEFAULT_MSG uGFX_INCLUDE_DIRS uGFX_SOURCES)

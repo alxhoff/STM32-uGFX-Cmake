@@ -27,7 +27,7 @@ endif()
 
 set(STM32Cube_DIR ${CUBE_SOURCE})
 
-set(uGFX_SOURCE "${CMAKE_BINARY_DIR}/uGFX")
+set(uGFX_SOURCE "${CMAKE_BINARY_DIR}/uGFX-Fork")
 if(EXISTS ${uGFX_SOURCE})
     message("uGFX directroy exists")
 else()
@@ -56,10 +56,7 @@ FIND_PACKAGE(STM32STDPERIPH COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart
 FIND_PACKAGE(CMSIS REQUIRED)
 # FIND_PACKAGE(STM32HAL COMPONENTS adc cortex dma eth flash flash_ramfunc gpio i2c pcd rcc tim uart REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS usb REQUIRED)
-FIND_PACKAGE(uGFX COMPONENTS gfx gdriver gdisp gos REQUIRED)
-
-MESSAGE("XX: ${uGFX_INCLUDE_DIRS}")
-MESSAGE("YY: ${uGFX_SOURCES}")
+FIND_PACKAGE(uGFX COMPONENTS gdisp_mcufont gdriver gevent ginput gtimer gwin gdisp gos REQUIRED)
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
