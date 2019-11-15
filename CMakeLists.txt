@@ -61,12 +61,12 @@ endif()
 set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
 
 SET(FREERTOS_HEAP_IMPL 4)
+SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g")
 
 FIND_PACKAGE(FreeRTOS)
 FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
 FIND_PACKAGE(STM32Discovery REQUIRED)
 FIND_PACKAGE(CMSIS REQUIRED)
-# FIND_PACKAGE(STM32HAL COMPONENTS adc cortex dma eth flash flash_ramfunc gpio i2c pcd rcc tim uart REQUIRED)
 FIND_PACKAGE(STM32LL COMPONENTS usb REQUIRED)
 FIND_PACKAGE(uGFX COMPONENTS gdisp_mcufont gdriver gevent ginput gtimer gwin gdisp gos REQUIRED)
 
@@ -74,7 +74,6 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${PROJECT_SOURCE_DIR}/inc"
     ${CMSIS_INCLUDE_DIRS}
-    # ${STM32HAL_INCLUDE_DIR}
     ${STM32LL_INCLUDE_DIR}
     ${STM32STD_INCLUDE_DIR}
     ${STM32Discovery_INCLUDE_DIR}
@@ -89,7 +88,6 @@ SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 ADD_EXECUTABLE(
     ${CMAKE_PROJECT_NAME}
     ${PROJECT_SOURCES}
-    # ${STM32HAL_SOURCES}
     ${STM32STD_SOURCES}
     ${STM32Discovery_SOURCES}
     ${STM32LL_SOURCES}
@@ -98,7 +96,7 @@ ADD_EXECUTABLE(
     ${uGFX_SOURCES}
     )
 
-FOREACH(INCLUDE ${STM32STD_INCLUDE_DIR})
+FOREACH(INCLUDE ${uGFX_INCLUDE_DIRS})
     MESSAGE("FF: ${INCLUDE}")
 ENDFOREACH()
 
