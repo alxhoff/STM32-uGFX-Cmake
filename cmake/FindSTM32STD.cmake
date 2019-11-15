@@ -13,6 +13,7 @@ ENDIF()
 SET(STD_HEADERS
     misc.h
     stm32f4xx.h
+    core_cm4.h
     )
 
 SET(STD_SRCS
@@ -63,6 +64,7 @@ FOREACH(HEADER ${STD_HEADERS})
         NAMES ${HEADER}
         PATHS
         ${STM32STD_DIR}/Libraries/CMSIS/Device/ST/STM32F4xx/Include
+        ${STM32STD_DIR}/Libraries/CMSIS/Include
         ${STM32STD_DIR}/Libraries/STM32F4xx_StdPeriph_Driver/inc
         CMAKE_FIND_ROOT_PATH_BOTH
         )
