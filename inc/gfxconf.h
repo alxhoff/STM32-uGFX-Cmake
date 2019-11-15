@@ -40,10 +40,10 @@
 
 /* GFX sub-systems to turn on */
 #define GFX_USE_GDISP TRUE
-#define GFX_USE_GWIN TRUE
-#define GFX_USE_GEVENT TRUE
+#define GFX_USE_GWIN FALSE
+#define GFX_USE_GEVENT FALSE
 #define GFX_USE_GINPUT FALSE
-#define GFX_USE_GTIMER TRUE
+#define GFX_USE_GTIMER FALSE
 
 /* Features for the GDISP sub-system. */
 #define GDISP_NEED_STARTUP_LOGO FALSE

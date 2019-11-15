@@ -60,13 +60,13 @@ endif()
 
 set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
 
-SET(FREERTOS_HEAP_IMPL 4)
+SET(FREERTOS_HEAP_IMPL 1)
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g")
 
 FIND_PACKAGE(FreeRTOS)
 FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
-FIND_PACKAGE(STM32Discovery REQUIRED)
-FIND_PACKAGE(uGFX COMPONENTS gdisp_mcufont gdriver gevent ginput gtimer gwin gdisp gos REQUIRED)
+FIND_PACKAGE(STM32Discovery COMPONENTS ioe lcd sdram REQUIRED)
+FIND_PACKAGE(uGFX COMPONENTS gdisp_mcufont gdriver gdisp gos REQUIRED)
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
