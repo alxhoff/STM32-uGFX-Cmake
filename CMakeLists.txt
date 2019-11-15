@@ -99,6 +99,17 @@ ADD_CUSTOM_TARGET(
 
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.bin)
 
+SET(GDB_COMMAND "file ${CMAKE_PROJECT_NAME}.bin; target remote localhost:3333; monitor reset halt;load;monitor reset init;break main; continue;")
+
+ADD_CUSTOM_TARGET(
+    debug
+    COMMAND openocd -f board/stm32f429discovery.cfg >/dev/null 2>&1 & sleep 2
+    COMMAND ${TARGET_TRIPLET}-gdb -tui -command=${GDB_COMMAND}
+    COMMAND killall -15 openocd
+    )
+
+ADD_DEPENDENCIES(debug flash)
+
 STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.bin)
 STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.bin)
 STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.bin)
