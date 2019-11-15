@@ -10,10 +10,9 @@ SET(uGFX_GDISP_DRIVERS ED060SC4  AlteraFramereader framebuffer ED060SC4 Fb24bpp
     # STM32F429iDiscovery
     STM32LTDC TestStub TLS8204)
 
-LIST(APPEND uGFX_COMPONENTS ${uGFX_GDISP_DRIVERS})
-
 SET(uGFX_REQUIRED_COMPONENTS gfx gos gdisp gdriver)
 LIST(APPEND uGFX_COMPONENTS ${uGFX_REQUIRED_COMPONENTS})
+LIST(APPEND uGFX_COMPONENTS ${uGFX_GDISP_DRIVERS})
 
 SET(uGFX_PREFIX gfx)
 
@@ -29,6 +28,12 @@ SET(uGFX_SRCS
     ${uGFX_PREFIX}_mk.c
     )
 
+if(NOT uGFX_LLD_CONFIG)
+    MESSAGE(WARNING "No uGFX_LLD_CONFIG given, this may result in an error")
+ELSE()
+    LIST(APPEND uGFX_INCLUDE_DIRS ${uGFX_LLD_CONFIG})
+ENDIF()
+
 # Set defaults if no components given
 IF(NOT uGFX_FIND_COMPONENTS)
     SET(uGFX_FIND_COMPONENTS uGFX_COMPONENTS)
@@ -42,6 +47,17 @@ FOREACH(cmp ${uGFX_REQUIRED_COMPONENTS})
         LIST(APPEND uGFX_FIND_COMPONENTS ${cmp})
     ENDIF()
 ENDFOREACH()
+
+IF(NOT uGFX_DRIVERS)
+    MESSAGE("No uGFX_DRIVERS set, available drivers: ${uGFX_GDISP_DRIVERS}")
+ELSE()
+    FOREACH(driver ${uGFX_DRIVERS})
+        LIST(FIND uGFX_GDISP_DRIVERS ${driver} DRIVER_INDEX)
+        IF(${DRIVER_INDEX} LESS 0)
+            LIST(APPEND uGFX_FIND_DRIVERS ${driver})
+        ENDIF()
+    ENDFOREACH()
+ENDIF()
 
 FOREACH(cmp ${uGFX_FIND_COMPONENTS})
     LIST(FIND uGFX_COMPONENTS ${cmp} uGFX_FOUND_INDEX)
@@ -136,6 +152,7 @@ SET(uGFX_gwin_SOURCES gwin_button.c gwin_container.c gwin_image.c gwin_list.c
     gwin_console.c gwin_graph.c gwin_label.c gwin_radio.c gwin_widget.c)
 
 FOREACH(comp ${uGFX_FIND_COMPONENTS})
+    MESSAGE("OOO: ${comp}")
     LIST(FIND uGFX_COMPONENTS ${comp} INDEX)
     IF(INDEX EQUAL -1)
         MESSAGE(FATAL_ERROR "Unknown uGFX component: ${comp}\nSupported uGFX components: ${uGFX_COMPONENTS}")
@@ -166,6 +183,13 @@ ENDFOREACH()
 
 LIST(REMOVE_DUPLICATES uGFX_INCLUDE_DIRS)
 LIST(REMOVE_DUPLICATES uGFX_SOURCES)
+
+FOREACH(header ${uGFX_INCLUDE_DIRS})
+    MESSAGE("XXX: ${header}")
+ENDFOREACH()
+FOREACH(src ${uGFX_SOURCES})
+    MESSAGE("PPP: ${src}")
+ENDFOREACH()
 
 INCLUDE(FindPackageHandleStandardArgs)
 
