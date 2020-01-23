@@ -1,3 +1,15 @@
+
+# Fix For MACOS compability
+if (APPLE)
+    set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+endif()
+# TODO: set as default?
+
+# Parameters (TODO: move them somewhere else)
+set(uGFX_DRIVERS ILI9341) # TODO: required?
+set(uGFX_LLD_CONFIG "gdisp_lld_config.h") # TODO: required?
+set(DISCOVERY_BOARD_DISC1 TRUE) # set to enable debugging for DISC1 Boards
+
 PROJECT(STM32F4_UGFX)
 
 set(CMAKE_BUILD_TYPE Debug)
@@ -90,6 +102,9 @@ ADD_EXECUTABLE(
     ${STM32LL_SOURCES}
     ${FreeRTOS_SOURCES}
     ${uGFX_SOURCES}
+    gdisp_lld_ILI9341.c
+    startup_stm32f429_439xx.S
+    system_stm32f4xx.c
     )
 
 ADD_CUSTOM_TARGET(
