@@ -1,3 +1,16 @@
+
+# Fix For MACOS compability
+if (APPLE)
+    set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+endif()
+# TODO: set as default?
+
+# Parameters (TODO: move them somewhere else)
+set(uGFX_DRIVERS ILI9341) # TODO: required?
+set(uGFX_LLD_CONFIG "gdisp_lld_config.h") # TODO: required?
+#set(DISCOVERY_BOARD_DISC1 TRUE) # set to enable debugging for DISC1 Boards
+#SET(TOOLCHAIN_PREFIX "/usr/local") # Set depending on System (f.e. Homebrew)
+
 PROJECT(STM32F4_UGFX)
 
 set(CMAKE_BUILD_TYPE Debug)
@@ -61,7 +74,7 @@ endif()
 set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
 
 SET(FREERTOS_HEAP_IMPL 1)
-SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g")
+SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g3")
 
 FIND_PACKAGE(FreeRTOS)
 FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
@@ -83,33 +96,43 @@ file(GLOB PROJECT_SOURCES "src/*.c")
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
 ADD_EXECUTABLE(
-    ${CMAKE_PROJECT_NAME}.bin
+    ${CMAKE_PROJECT_NAME}.elf
     ${PROJECT_SOURCES}
     ${STM32STD_SOURCES}
     ${STM32Discovery_SOURCES}
     ${STM32LL_SOURCES}
     ${FreeRTOS_SOURCES}
     ${uGFX_SOURCES}
+    gdisp_lld_ILI9341.c
+    startup_stm32f429_439xx.S
+    system_stm32f4xx.c
     )
 
 ADD_CUSTOM_TARGET(
     flash
+    COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin # TODO
     COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x8000000
     )
 
-ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.bin)
+ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.elf)
 
-SET(GDB_COMMAND "file ${CMAKE_PROJECT_NAME}.bin; target remote localhost:3333; monitor reset halt;load;monitor reset init;break main; continue;")
+if(${DISCOVERY_BOARD_DISC1})
+    set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
+else()
+    set(OPENOCD_BOARD "board/stm32f429discovery.cfg")
+endif()
 
 ADD_CUSTOM_TARGET(
     debug
-    COMMAND openocd -f board/stm32f429discovery.cfg >/dev/null 2>&1 & sleep 2
-    COMMAND ${TARGET_TRIPLET}-gdb -tui -command=${GDB_COMMAND}
+    COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=GDBCommands
     COMMAND killall -15 openocd
     )
 
 ADD_DEPENDENCIES(debug flash)
 
-STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.bin)
-STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.bin)
-STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.bin)
+STM32_SET_TARGET_PROPERTIES(${CMAKE_PROJECT_NAME}.elf)
+STM32_ADD_HEX_BIN_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+STM32_PRINT_SIZE_OF_TARGETS(${CMAKE_PROJECT_NAME}.elf)
+
+# TODO: also clean .bin file on `make clean`
