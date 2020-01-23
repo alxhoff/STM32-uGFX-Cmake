@@ -61,7 +61,7 @@ endif()
 set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
 
 SET(FREERTOS_HEAP_IMPL 1)
-SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g")
+SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g3")
 
 FIND_PACKAGE(FreeRTOS)
 FIND_PACKAGE(STM32STD COMPONENTS dma dma2d fmc i2c ltdc gpio rcc spi usart adc tim exti syscfg REQUIRED)
@@ -99,12 +99,16 @@ ADD_CUSTOM_TARGET(
 
 ADD_DEPENDENCIES(flash ${CMAKE_PROJECT_NAME}.bin)
 
-SET(GDB_COMMAND "file ${CMAKE_PROJECT_NAME}.bin; target remote localhost:3333; monitor reset halt;load;monitor reset init;break main; continue;")
+if(${DISCOVERY_BOARD_DISC1})
+    set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
+else()
+    set(OPENOCD_BOARD "board/stm32f429discovery.cfg")
+endif()
 
 ADD_CUSTOM_TARGET(
     debug
-    COMMAND openocd -f board/stm32f429discovery.cfg >/dev/null 2>&1 & sleep 2
-    COMMAND ${TARGET_TRIPLET}-gdb -tui -command=${GDB_COMMAND}
+    COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=GDBCommands
     COMMAND killall -15 openocd
     )
 
