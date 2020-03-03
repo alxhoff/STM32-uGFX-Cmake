@@ -73,7 +73,7 @@ endif()
 
 set(STM32Discovery_DIR ${STM32_DISC_SOURCE})
 
-SET(FREERTOS_HEAP_IMPL 1)
+SET(FREERTOS_HEAP_IMPL 4)
 SET(CMAKE_C_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4 -mlittle-endian -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -std=c99 -Wall -Wunused-value -O3 -ffast-math -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-common --param max-inline-insns-single=1000 -DUSE_STDPERIPH_DRIVER -DGFX_USE_OS_FREERTOS=TRUE -DSTM32F429_439xx=TRUE -g3")
 
 FIND_PACKAGE(FreeRTOS)
