@@ -113,6 +113,19 @@ ADD_EXECUTABLE(
     system_stm32f4xx.c
     )
 
+ADD_EXECUTABLE(
+    ${PROJECT_BIN_FILE}
+    ${PROJECT_SOURCES}
+    ${STM32STD_SOURCES}
+    ${STM32Discovery_SOURCES}
+    ${STM32LL_SOURCES}
+    ${FreeRTOS_SOURCES}
+    ${uGFX_SOURCES}
+    gdisp_lld_ILI9341.c
+    startup_stm32f429_439xx.S
+    system_stm32f4xx.c
+    )
+
 target_link_libraries(${PROJECT_ELF_FILE} m) # Math library required for sqrt(),...
 
 ADD_CUSTOM_TARGET(
@@ -142,4 +155,11 @@ STM32_SET_TARGET_PROPERTIES(${PROJECT_ELF_FILE})
 STM32_ADD_HEX_BIN_TARGETS(${PROJECT_ELF_FILE})
 STM32_PRINT_SIZE_OF_TARGETS(${PROJECT_ELF_FILE})
 
-# TODO: also clean .bin file on `make clean`
+ADD_CUSTOM_TARGET(
+    clean_lib
+    DEPENDS cleanlib
+    )
+
+add_custom_command(OUTPUT cleanlib
+    COMMAND ${CMAKE_COMMAND} -P "cmake/cleanall.cmake"
+    )
