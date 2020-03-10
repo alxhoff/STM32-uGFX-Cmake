@@ -93,16 +93,15 @@ INCLUDE_DIRECTORIES(
     ${uGFX_INCLUDE_DIRS}
     )
 
-file(GLOB PROJECT_SOURCES "src/*.c")
+file(GLOB USER_SOURCES "src/*.c")
 
 SET(STM32_LINKER_SCRIPT ${CMSIS_LINKER_SCRIPT})
 
 SET(PROJECT_ELF_FILE ${CMAKE_PROJECT_NAME}.elf)
 SET(PROJECT_BIN_FILE ${CMAKE_PROJECT_NAME}.bin)
 
-ADD_EXECUTABLE(
-    ${PROJECT_ELF_FILE}
-    ${PROJECT_SOURCES}
+SET(PROJECT_SOURCES
+    ${USER_SOURCES}
     ${STM32STD_SOURCES}
     ${STM32Discovery_SOURCES}
     ${STM32LL_SOURCES}
@@ -114,16 +113,8 @@ ADD_EXECUTABLE(
     )
 
 ADD_EXECUTABLE(
-    ${PROJECT_BIN_FILE}
+    ${PROJECT_ELF_FILE}
     ${PROJECT_SOURCES}
-    ${STM32STD_SOURCES}
-    ${STM32Discovery_SOURCES}
-    ${STM32LL_SOURCES}
-    ${FreeRTOS_SOURCES}
-    ${uGFX_SOURCES}
-    gdisp_lld_ILI9341.c
-    startup_stm32f429_439xx.S
-    system_stm32f4xx.c
     )
 
 target_link_libraries(${PROJECT_ELF_FILE} m) # Math library required for sqrt(),...
@@ -132,9 +123,19 @@ ADD_CUSTOM_TARGET(
     flash
     COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_ELF_FILE} ${PROJECT_BIN_FILE}
     COMMAND st-flash write ${PROJECT_BIN_FILE} 0x8000000
+    COMMAND rm ${PROJECT_BIN_FILE}
     )
 
 ADD_DEPENDENCIES(flash ${PROJECT_ELF_FILE})
+
+ADD_CUSTOM_TARGET(clean_cmake
+    COMMAND ${CMAKE_BUILD_TOOL} clean
+    COMMAND git clean -d -f -x
+    )
+
+ADD_CUSTOM_TARGET(clean_all
+    COMMAND git clean -d ${PROJECT_SOURCE_DIR} -f -f -x
+    )
 
 if(${DISCOVERY_BOARD_DISC1})
     set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
