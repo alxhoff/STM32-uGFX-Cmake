@@ -130,7 +130,7 @@ target_link_libraries(${PROJECT_ELF_FILE} m) # Math library required for sqrt(),
 
 ADD_CUSTOM_TARGET(
     flash
-    COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_ELF_FILE} ${PROJECT_BIN_FILE} # TODO
+    COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_ELF_FILE} ${PROJECT_BIN_FILE}
     COMMAND st-flash write ${PROJECT_BIN_FILE} 0x8000000
     )
 
