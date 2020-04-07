@@ -1,0 +1,3 @@
+{
+    "cmake.buildDirectory": "@CMAKE_BINARY_DIR@"
+}
