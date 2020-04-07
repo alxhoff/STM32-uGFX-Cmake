@@ -139,6 +139,10 @@ ADD_CUSTOM_TARGET(clean_all
     COMMAND git clean -d ${PROJECT_SOURCE_DIR} -f -f -x
     )
 
+ADD_CUSTOM_TARGET(clean_lib
+    COMMAND rm -rf ${CMAKE_LIBRARY_PATH}/*
+    )
+
 if(${DISCOVERY_BOARD_DISC1})
     set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
 else()
@@ -158,11 +162,3 @@ STM32_SET_TARGET_PROPERTIES(${PROJECT_ELF_FILE})
 STM32_ADD_HEX_BIN_TARGETS(${PROJECT_ELF_FILE})
 STM32_PRINT_SIZE_OF_TARGETS(${PROJECT_ELF_FILE})
 
-ADD_CUSTOM_TARGET(
-    clean_lib
-    DEPENDS cleanlib
-    )
-
-add_custom_command(OUTPUT cleanlib
-    COMMAND ${CMAKE_COMMAND} -P "cmake/cleanall.cmake"
-    )
