@@ -28,6 +28,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
 
+set(CMAKE_CONFIG_DIR ${PROJECT_SOURCE_DIR}/config)
+
 set(CMAKE_LIBRARY_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 FIND_PACKAGE(Git REQUIRED)
@@ -146,7 +148,7 @@ endif()
 ADD_CUSTOM_TARGET(
     debug
     COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
-    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CURRENT_LIST_DIR}/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CONFIG_DIR}/gdb/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
     COMMAND killall -15 openocd
     )
 
