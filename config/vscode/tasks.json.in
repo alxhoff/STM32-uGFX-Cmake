@@ -1,5 +1,8 @@
 {
     "version": "2.0.0",
+    "options": {
+        "cwd": "@CMAKE_BINARY_DIR@"
+    },
     "tasks": [
         {
             "label": "Clean",
