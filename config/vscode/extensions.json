@@ -1,9 +1,9 @@
 {
 	"recommendations": [
 		"ms-vscode.cpptools",
-		"marus25.cortex-debug",
-		"ms-vscode.cmake-tools"		
+		"marus25.cortex-debug"
 	],
 	"unwantedRecommendations": [
+		"ms-vscode.cmake-tools"
 	]
 }

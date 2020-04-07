@@ -6,7 +6,6 @@ The following config files located in the `.vscode` directory will be generated 
 - `launch.json`
 - `tasks.json`
 - `extensions.json`
-- `settings.json`
 
 Please do **NOT** edit files managed by CMake.
 
