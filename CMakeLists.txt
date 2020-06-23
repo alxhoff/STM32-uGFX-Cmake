@@ -25,6 +25,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/gcc_stm32.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
 
+set(CMAKE_CONFIG_DIR ${PROJECT_SOURCE_DIR}/config)
+
 set(CMAKE_LIBRARY_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 FIND_PACKAGE(Git REQUIRED)
@@ -132,6 +134,10 @@ ADD_CUSTOM_TARGET(clean_all
     COMMAND git clean -d ${PROJECT_SOURCE_DIR} -f -f -x
     )
 
+ADD_CUSTOM_TARGET(clean_lib
+    COMMAND rm -rf ${CMAKE_LIBRARY_PATH}/*
+    )
+
 if(${DISCOVERY_BOARD_DISC1})
     set(OPENOCD_BOARD "board/stm32f429disc1.cfg")
 else()
@@ -141,7 +147,7 @@ endif()
 ADD_CUSTOM_TARGET(
     debug
     COMMAND openocd -f ${OPENOCD_BOARD} >/dev/null 2>&1 & sleep 2
-    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CURRENT_LIST_DIR}/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
+    COMMAND ${TARGET_TRIPLET}-gdb -quiet -tui -command=${CMAKE_CONFIG_DIR}/gdb/GDBCommands -se ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf
     COMMAND killall -15 openocd
     )
 
@@ -151,11 +157,25 @@ STM32_SET_TARGET_PROPERTIES(${PROJECT_ELF_FILE})
 STM32_ADD_HEX_BIN_TARGETS(${PROJECT_ELF_FILE})
 STM32_PRINT_SIZE_OF_TARGETS(${PROJECT_ELF_FILE})
 
-ADD_CUSTOM_TARGET(
-    clean_lib
-    DEPENDS cleanlib
-    )
-
-add_custom_command(OUTPUT cleanlib
-    COMMAND ${CMAKE_COMMAND} -P "cmake/cleanall.cmake"
-    )
+# Enable IDE project generation by running `cmake -DUSE_IDE=vscode|eclipse ..`
+if("${USE_IDE}" STREQUAL "eclipse")
+    message(WARNING "Eclipse IDE currently not supported!")
+    # TODO: Debug Configuration
+elseif("${USE_IDE}" STREQUAL "vscode")
+    set(SVD_SOURCE "${CMAKE_CONFIG_DIR}/svd")
+    if(EXISTS ${SVD_SOURCE})
+        message(STATUS "SVD directory exists")
+    else()
+        message(STATUS "Getting CMSIS SVD")
+        set(GIT_REPOSITORY "https://github.com/PhilippvK/cmsis-svd.git")
+        execute_process(COMMAND ${GIT_EXECUTABLE} clone ${GIT_REPOSITORY} ${SVD_SOURCE})
+    endif()
+    message(STATUS "Generating VSCode project files in `.vscode`...")
+    configure_file(${CMAKE_CONFIG_DIR}/vscode/launch.json.in ${PROJECT_SOURCE_DIR}/.vscode/launch.json @ONLY)
+    configure_file(${CMAKE_CONFIG_DIR}/vscode/extensions.json ${PROJECT_SOURCE_DIR}/.vscode/extensions.json COPYONLY)
+    configure_file(${CMAKE_CONFIG_DIR}/vscode/tasks.json.in ${PROJECT_SOURCE_DIR}/.vscode/tasks.json @ONLY)
+    configure_file(${CMAKE_CONFIG_DIR}/vscode/c_cpp_properties.json.in ${PROJECT_SOURCE_DIR}/.vscode/c_cpp_properties.json @ONLY)
+    configure_file(${CMAKE_CONFIG_DIR}/vscode/README.md ${PROJECT_SOURCE_DIR}/.vscode/README.md COPYONLY)
+else()
+    message(STATUS "No IDE projects generated.")
+endif()

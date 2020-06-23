@@ -14,6 +14,9 @@ _deps
 
 build
 
+.vscode
+config/svd
+
 # Prerequisites
 *.d
 
