@@ -1,4 +1,3 @@
-
 # Fix For MACOS compability
 if (APPLE)
     set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
@@ -9,7 +8,6 @@ endif()
 set(uGFX_DRIVERS ILI9341) # TODO: required?
 set(uGFX_LLD_CONFIG "gdisp_lld_config.h") # TODO: required?
 #set(DISCOVERY_BOARD_DISC1 TRUE) # set to enable debugging for DISC1 Boards
-#SET(TOOLCHAIN_PREFIX "/usr/local") # Set depending on System (f.e. Homebrew)
 
 PROJECT(STM32F4_UGFX)
 
@@ -21,7 +19,6 @@ ENABLE_LANGUAGE(ASM)
 # Remove -rdynamic option from linking that is not supported by arm-none-eabi
 # Also remove "undefined reference to `_sbrk'" error
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-specs=nano.specs -specs=nosys.specs")
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 set(STM32_CHIP STM32F429ZIT)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
