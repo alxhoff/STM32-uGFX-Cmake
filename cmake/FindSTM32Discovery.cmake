@@ -8,7 +8,6 @@ ENDIF()
 SET(DISC_PREFIX stm32f429i_discovery)
 
 SET(DISC_HEADERS
-    # stm32f4xx.h
     ${DISC_PREFIX}.h
     )
 

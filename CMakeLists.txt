@@ -4,9 +4,6 @@ if (APPLE)
 endif()
 # TODO: set as default?
 
-# Parameters (TODO: move them somewhere else)
-set(uGFX_DRIVERS ILI9341) # TODO: required?
-set(uGFX_LLD_CONFIG "gdisp_lld_config.h") # TODO: required?
 #set(DISCOVERY_BOARD_DISC1 TRUE) # set to enable debugging for DISC1 Boards
 
 PROJECT(STM32F4_UGFX)
